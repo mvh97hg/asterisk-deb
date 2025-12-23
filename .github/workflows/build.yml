@@ -54,8 +54,7 @@ jobs:
       - name: Update changelog
         run: |
           cd asterisk_${VERSION}
-          dch --no-edit \
-            --package asterisk \
+          dch --package asterisk \
             --newversion "1:${VERSION}-1~${{ matrix.distro }}" \
             --distribution "${{ matrix.distro }}" \
             "Automated build from tag v${VERSION}"
