@@ -1,0 +1,32 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  configure)
+    if ! getent group asterisk >/dev/null; then
+      addgroup --system asterisk
+    fi
+
+    if ! getent passwd asterisk >/dev/null; then
+      adduser \
+        --system \
+        --home /var/lib/asterisk \
+        --no-create-home \
+        --ingroup asterisk \
+        --shell /usr/sbin/nologin \
+        asterisk
+    fi
+    # Enable runuser / rungroup in asterisk.conf
+    if [ -f /etc/asterisk/asterisk.conf ]; then
+      sed -i -E 's/^;\s*(run(user|group))\s*=/\1 =/' \
+        /etc/asterisk/asterisk.conf
+    fi
+
+    # Fix ownership
+    chown -R asterisk:asterisk /var/{lib,log,spool}/asterisk /etc/asterisk
+
+  ;;
+esac
+
+#DEBHELPER#
+exit 0

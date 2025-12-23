@@ -1,0 +1,106 @@
+name: Build & Release Asterisk
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build (${{ matrix.distro }})
+    strategy:
+      matrix:
+        include:
+          - distro: jammy
+            os: ubuntu-22.04
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            debhelper \
+            devscripts \
+            dpkg-dev \
+            curl \
+            ca-certificates
+
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+
+      - name: Prepare Asterisk source
+        run: |
+          mkdir -p /opt/asterisk_build
+          cd /opt/asterisk_build
+          curl -fsSL https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${VERSION}.tar.gz \
+            -o asterisk_${VERSION}.tar.gz
+          tar -xzf asterisk_${VERSION}.tar.gz
+          mv asterisk-${VERSION} asterisk_${VERSION}
+
+      - name: Update changelog
+        run: |
+          cd /opt/asterisk_build/asterisk_${VERSION}
+          dch --create \
+              --package asterisk \
+              --newversion "2:${VERSION}-1~${{ matrix.distro }}" \
+              --distribution "${{ matrix.distro }}" \
+              "Automated build from tag v${VERSION}"
+          dch --release
+
+      - name: Install prerequisites
+        run: |
+          cd /opt/asterisk_build/asterisk_${VERSION}
+          sudo contrib/scripts/install_prereq install
+          ./bootstrap.sh
+
+      - name: Build signed package
+        run: |
+          cd /opt/asterisk_build/asterisk_${VERSION}
+          dpkg-buildpackage -b -k${{ secrets.GPG_KEY_ID }}
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p artifacts
+          mv /opt/asterisk_build/*.deb artifacts/
+          mv /opt/asterisk_build/*.ddeb artifacts/ || true
+          mv /opt/asterisk_build/*.changes artifacts/
+          mv /opt/asterisk_build/*.buildinfo artifacts/ || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: asterisk-${{ matrix.distro }}
+          path: artifacts
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref }}
+          files: |
+            all-artifacts/**/*.deb
+            all-artifacts/**/*.ddeb
+            all-artifacts/**/*.changes
+            all-artifacts/**/*.buildinfo

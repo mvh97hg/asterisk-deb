@@ -1,0 +1,69 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+export DH_VERBOSE = 1
+
+
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+
+%:
+	dh $@ --without autoreconf
+
+
+# dh_make generated override targets
+# This is example for Cmake (See https://bugs.debian.org/641051 )
+#override_dh_auto_configure:
+#	dh_auto_configure -- \
+#	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
+override_dh_auto_configure:
+	./configure --with-pjproject-bundled --with-ssl=ssl --with-crypto
+	
+	make menuselect/menuselect menuselect-tree menuselect.makeopts
+	# disable BUILD_NATIVE to avoid platform issues
+	menuselect/menuselect --disable BUILD_NATIVE menuselect.makeopts
+	
+	# Enable better backtraces for debugging
+	menuselect/menuselect --enable BETTER_BACKTRACES menuselect.makeopts
+	
+	# enable ooh323
+	menuselect/menuselect --enable chan_ooh323 menuselect.makeopts
+	
+	# codecs
+	menuselect/menuselect --enable codec_opus menuselect.makeopts
+	
+	# Enable stereorize module
+	menuselect/menuselect --enable stereorize menuselect.makeopts
+	
+	# CDR and CEL modules
+	menuselect/menuselect --disable cdr_csv menuselect.makeopts
+	menuselect/menuselect --disable cdr_odbc menuselect.makeopts
+	menuselect/menuselect --disable cdr_radius menuselect.makeopts
+	menuselect/menuselect --disable cdr_sqlite3_custom menuselect.makeopts
+	menuselect/menuselect --disable cdr_tds menuselect.makeopts
+	
+	menuselect/menuselect --disable cel_custom menuselect.makeopts
+	menuselect/menuselect --disable cel_manager menuselect.makeopts
+	menuselect/menuselect --disable cel_odbc menuselect.makeopts
+	menuselect/menuselect --disable cel_pgsql menuselect.makeopts
+	menuselect/menuselect --disable cel_radius menuselect.makeopts
+	menuselect/menuselect --disable cel_sqlite3_custom menuselect.makeopts
+	menuselect/menuselect --disable cel_tds menuselect.makeopts
+	
+	# Disable sound packages to reduce image size
+	menuselect/menuselect --disable-category MENUSELECT_CORE_SOUNDS menuselect.makeopts
+	menuselect/menuselect --disable-category MENUSELECT_MOH menuselect.makeopts
+	menuselect/menuselect --disable-category MENUSELECT_EXTRA_SOUNDS menuselect.makeopts
+	menuselect/menuselect --disable chan_dahdi menuselect.makeopts
+override_dh_auto_build:
+	make -j$(nproc)
+ 
+override_dh_auto_install:
+	make DESTDIR=$(CURDIR)/debian/asterisk install

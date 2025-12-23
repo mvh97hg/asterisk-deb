@@ -1,0 +1,40 @@
+Source: asterisk
+Section: comm
+Priority: optional
+Maintainer: hungmv <hungmv9710@gmail.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ build-essential,
+ pkg-config,
+ autoconf-archive,
+ bison,
+ flex,
+ patch,
+ libedit-dev,
+ libjansson-dev,
+ libsqlite3-dev,
+ uuid-dev,
+ libxml2-dev,
+ libssl-dev,
+ zlib1g-dev,
+ libogg-dev,
+ libvorbis-dev,
+ libgsm1-dev,
+ libspandsp-dev,
+ libasound2-dev,
+ portaudio19-dev,
+ libsrtp2-dev | libsrtp0-dev,
+ libpq-dev,
+ libmysqlclient-dev | libmariadb-dev,
+ unixodbc-dev,
+ libcurl4-openssl-dev,
+ libldap2-dev
+Standards-Version: 4.6.0
+Homepage: https://www.asterisk.org
+Rules-Requires-Root: no
+
+Package: asterisk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Open Source PBX
+ Asterisk telephony toolkit.
