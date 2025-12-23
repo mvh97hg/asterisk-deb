@@ -58,7 +58,7 @@ jobs:
             --newversion "1:${VERSION}-1~${{ matrix.distro }}" \
             --distribution "${{ matrix.distro }}" \
             "Automated build from tag v${VERSION}"
-          dch --no-edit --release
+          dch --release
 
       - name: Install build dependencies
         run: |
