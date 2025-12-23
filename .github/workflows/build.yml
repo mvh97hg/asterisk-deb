@@ -16,73 +16,70 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      DEBEMAIL: hungmv9710@gmail.com
+      DEBFULLNAME: hungmv
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract version
+      - name: Extract version from tag
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           echo "VERSION=${TAG#v}" >> $GITHUB_ENV
 
-      - name: Install build tools
+      - name: Install tools
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential \
-            debhelper \
             devscripts \
-            dpkg-dev \
-            curl \
-            ca-certificates
+            debhelper \
+            gnupg \
+            curl
 
       - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
 
-      - name: Prepare Asterisk source
+      - name: Download Asterisk source
         run: |
-          mkdir -p /opt/asterisk_build
-          cd /opt/asterisk_build
-          curl -fsSL https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${VERSION}.tar.gz \
-            -o asterisk_${VERSION}.tar.gz
-          tar -xzf asterisk_${VERSION}.tar.gz
-          mv asterisk-${VERSION} asterisk_${VERSION}
+          mkdir asterisk_${VERSION} && cd asterisk_${VERSION}
+          curl -fsSL https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${VERSION}.tar.gz | tar --strip-components=1 -xz
+
+      - name: Inject debian packaging
+        run: |
+          cp -a debian asterisk_${VERSION}/
 
       - name: Update changelog
         run: |
-          cd /opt/asterisk_build/asterisk_${VERSION}
+          cd asterisk_${VERSION}
           dch --create \
-              --package asterisk \
-              --newversion "2:${VERSION}-1~${{ matrix.distro }}" \
-              --distribution "${{ matrix.distro }}" \
-              "Automated build from tag v${VERSION}"
+            --package asterisk \
+            --newversion "1:${VERSION}-1~${{ matrix.distro }}" \
+            --distribution "${{ matrix.distro }}" \
+            "Automated build from tag v${VERSION}"
           dch --release
 
-      - name: Install prerequisites
+      - name: Install build dependencies
         run: |
-          cd /opt/asterisk_build/asterisk_${VERSION}
-          sudo contrib/scripts/install_prereq install
-          ./bootstrap.sh
+          cd asterisk_${VERSION}
+          sudo apt-get build-dep -y .
 
       - name: Build signed package
         run: |
-          cd /opt/asterisk_build/asterisk_${VERSION}
+          cd asterisk_${VERSION}
           dpkg-buildpackage -b -k${{ secrets.GPG_KEY_ID }}
 
       - name: Collect artifacts
         run: |
           mkdir -p artifacts
-          mv /opt/asterisk_build/*.deb artifacts/
-          mv /opt/asterisk_build/*.ddeb artifacts/ || true
-          mv /opt/asterisk_build/*.changes artifacts/
-          mv /opt/asterisk_build/*.buildinfo artifacts/ || true
+          mv ../*.deb ../*.ddeb ../*.changes ../*.buildinfo artifacts/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: asterisk-${{ matrix.distro }}
-          path: artifacts
+          name: asterisk_${{ env.VERSION }}-${{ matrix.distro }}
+          path: artifacts/
 
   release:
     name: Create GitHub Release
