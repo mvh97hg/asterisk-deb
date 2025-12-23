@@ -54,11 +54,13 @@ jobs:
       - name: Update changelog
         run: |
           cd asterisk_${VERSION}
-          dch -a --package asterisk \
-            --newversion "1:${VERSION}-1~${{ matrix.distro }}" \
+          dch --newversion "1:${VERSION}-1~${{ matrix.distro }}" \
+            --package asterisk \
             --distribution "${{ matrix.distro }}" \
+            --force-bad-version \
             "Automated build from tag v${VERSION}"
-          dch --release
+
+          dch --release ""
 
       - name: Install build dependencies
         run: |
