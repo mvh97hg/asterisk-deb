@@ -1,6 +1,5 @@
 asterisk (1:22.7.0-1~jammy) jammy; urgency=medium
 
-  * Custom build of Asterisk 22.7.0 for Ubuntu Jammy
-  * Automated build from tag v22.7.0
+  * Custom build of Asterisk 22.7.0
 
- -- hungmv <hungmv9710@gmail.com>  Mon, 23 Dec 2025 17:45:00 +0700
+ -- hungmv <hungmv9710@gmail.com>  Tue, 23 Dec 2025 10:49:28 +0000
