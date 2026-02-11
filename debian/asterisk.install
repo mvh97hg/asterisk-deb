@@ -1,2 +1,3 @@
 debian/root/etc/asterisk/*  etc/asterisk/
 debian/root/healthcheck.sh /usr/lib/asterisk/scripts
+debian/root/asterisk /etc/init.d/asterisk

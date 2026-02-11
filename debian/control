@@ -10,6 +10,8 @@ Build-Depends:
  bison,
  flex,
  patch,
+ libspeex-dev,
+ libspeexdsp-dev,
  libedit-dev,
  libjansson-dev,
  libsqlite3-dev,

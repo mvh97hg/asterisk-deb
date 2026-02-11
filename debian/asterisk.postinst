@@ -13,7 +13,7 @@ case "$1" in
         --home /var/lib/asterisk \
         --no-create-home \
         --ingroup asterisk \
-        --shell /usr/sbin/nologin \
+        --shell /bin/sh \
         asterisk
     fi
     # Enable runuser / rungroup in asterisk.conf
@@ -23,8 +23,11 @@ case "$1" in
     fi
 
     # Fix ownership
-    chown -R asterisk:asterisk /var/{lib,log,spool}/asterisk /etc/asterisk
-
+    chown -R asterisk:asterisk \
+            /var/lib/asterisk \
+            /var/log/asterisk \
+            /var/spool/asterisk \
+            /etc/asterisk
   ;;
 esac
 
