@@ -1,0 +1,24 @@
+[Unit]
+Description=Asterisk PBX and telephony daemon
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=asterisk
+Group=asterisk
+RuntimeDirectory=asterisk
+RuntimeDirectoryMode=0755
+ExecStart=/usr/sbin/asterisk -f -U asterisk -G asterisk
+ExecReload=/usr/sbin/asterisk -rx "core reload"
+ExecStop=/usr/sbin/asterisk -rx "core stop now"
+ExecReStart=/usr/sbin/asterisk -rx "core restart gracefully"
+Restart=on-failure
+RestartSec=3
+LimitCORE=infinity
+LimitNOFILE=65536
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

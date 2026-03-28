@@ -16,18 +16,17 @@ case "$1" in
         --shell /bin/sh \
         asterisk
     fi
-    # Enable runuser / rungroup in asterisk.conf
+
+    # Enable runuser/rungroup if currently commented in asterisk.conf.
     if [ -f /etc/asterisk/asterisk.conf ]; then
-      sed -i -E 's/^;\s*(run(user|group))\s*=/\1 =/' \
+      sed -i -E 's/^;[[:space:]]*(run(user|group))[[:space:]]*=/\1 =/' \
         /etc/asterisk/asterisk.conf
     fi
 
-    # Fix ownership
-    chown -R asterisk:asterisk \
-            /var/lib/asterisk \
-            /var/log/asterisk \
-            /var/spool/asterisk \
-            /etc/asterisk
+    
+    for d in /etc/asterisk /var/lib/asterisk /var/log/asterisk /var/spool/asterisk /run/asterisk; do
+      install -d -o asterisk -g asterisk -m 0750 "$d"
+    done
   ;;
 esac
 

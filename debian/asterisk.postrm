@@ -2,30 +2,29 @@
 set -e
 
 case "$1" in
-    purge)
-        echo "Purging Asterisk data and user..."
-        
-        # Xóa user và group
-        if [ -x "$(command -v deluser)" ]; then
-            deluser --system --quiet asterisk || true
-            delgroup --system --quiet asterisk || true
-        fi
+  purge)
+    echo "Purging Asterisk data and user..."
 
-        # Xóa các thư mục dữ liệu và log
-        rm -rf /var/lib/asterisk
-        rm -rf /var/log/asterisk
-        rm -rf /var/spool/asterisk
-        rm -rf /etc/asterisk
-        rm -rf /var/run/asterisk
-    ;;
+    # Remove service user/group.
+    if [ -x "$(command -v deluser)" ]; then
+      deluser --system --quiet asterisk || true
+      delgroup --system --quiet asterisk || true
+    fi
 
-    remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-    ;;
+    # Remove runtime/data directories; keep config under /etc/asterisk.
+    rm -rf /var/lib/asterisk
+    rm -rf /var/log/asterisk
+    rm -rf /var/spool/asterisk
+    rm -rf /run/asterisk
+  ;;
 
-    *)
-        echo "postrm called with unknown argument \`$1'" >&2
-        exit 1
-    ;;
+  remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+  ;;
+
+  *)
+    echo "postrm called with unknown argument '$1'" >&2
+    exit 1
+  ;;
 esac
 
 #DEBHELPER#

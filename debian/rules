@@ -4,8 +4,8 @@
 export DH_VERBOSE = 1
 
 
-# see FEATURE AREAS in dpkg-buildflags(1)
-#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+# Enable distro hardening flags for production builds.
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 # see ENVIRONMENT in dpkg-buildflags(1)
 # package maintainers to append CFLAGS
@@ -25,7 +25,7 @@ export DH_VERBOSE = 1
 #	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
 override_dh_auto_configure:
 	./bootstrap.sh
-	./configure --with-pjproject-bundled --with-ssl=ssl --with-crypto
+	./configure --without-pjproject-bundled --with-ssl=ssl --with-crypto
 	
 	make menuselect/menuselect menuselect-tree menuselect.makeopts
 	# disable BUILD_NATIVE to avoid platform issues
@@ -45,11 +45,12 @@ override_dh_auto_configure:
 	
 	# Disable sound packages to reduce image size
 	menuselect/menuselect --disable-category MENUSELECT_CORE_SOUNDS menuselect.makeopts
-	menuselect/menuselect --disable-category MENUSELECT_MOH menuselect.makeopts
+# 	menuselect/menuselect --disable-category MENUSELECT_MOH menuselect.makeopts
 	menuselect/menuselect --disable-category MENUSELECT_EXTRA_SOUNDS menuselect.makeopts
 
 override_dh_auto_build:
-	make -j$(nproc)
+	$(MAKE)
  
 override_dh_auto_install:
 	make DESTDIR=$(CURDIR)/debian/asterisk install
+	make DESTDIR=$(CURDIR)/debian/asterisk install-logrotate
