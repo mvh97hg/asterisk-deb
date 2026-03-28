@@ -47,21 +47,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="${WORKDIR}/asterisk_${VERSION}"
 TARBALL_URL="https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${VERSION}.tar.gz"
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "curl is required" >&2
-  exit 1
-fi
-
-if ! command -v tar >/dev/null 2>&1; then
-  echo "tar is required" >&2
-  exit 1
-fi
-
-if ! command -v dpkg-buildpackage >/dev/null 2>&1; then
-  echo "dpkg-buildpackage is required (install package: devscripts)" >&2
-  exit 1
-fi
-
 run_privileged() {
   if [[ "${EUID}" -eq 0 ]]; then
     "$@"
@@ -87,6 +72,21 @@ if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
     curl
 fi
 
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl is required" >&2
+  exit 1
+fi
+
+if ! command -v tar >/dev/null 2>&1; then
+  echo "tar is required" >&2
+  exit 1
+fi
+
+if ! command -v dpkg-buildpackage >/dev/null 2>&1; then
+  echo "dpkg-buildpackage is required (install package: devscripts)" >&2
+  exit 1
+fi
+
 mkdir -p "${SRC_DIR}"
 
 if [[ -n "$(ls -A "${SRC_DIR}" 2>/dev/null)" ]]; then
@@ -104,7 +104,55 @@ cp -a "${SCRIPT_DIR}/debian" "${SRC_DIR}/debian"
 
 chmod +x \
   "${SRC_DIR}/debian/asterisk.postinst" \
-  "${SRC_DIR}/debian/asterisk.postrm"
+  "${SRC_DIR}/debian/asterisk.postrm" \
+  "${SRC_DIR}/debian/asterisk.install"
+
+# Update debian/changelog from Asterisk ChangeLog.
+update_debian_changelog() {
+  local src_dir="$1"
+  local version="$2"
+  local deb_changelog="${src_dir}/debian/changelog"
+  local ast_changelog
+  
+  # Find ChangeLog file: ChangeLog-VERSION.md or ChangeLog-VERSION or ChangeLog
+  if [[ -f "${src_dir}/ChangeLog-${version}.md" ]]; then
+    ast_changelog="${src_dir}/ChangeLog-${version}.md"
+  elif [[ -f "${src_dir}/ChangeLog-${version}" ]]; then
+    ast_changelog="${src_dir}/ChangeLog-${version}"
+  elif [[ -f "${src_dir}/ChangeLog" ]]; then
+    ast_changelog="${src_dir}/ChangeLog"
+  else
+    echo "warning: No ChangeLog found; skipping changelog update" >&2
+    return 0
+  fi
+
+  # Parse Asterisk ChangeLog and prepend to debian/changelog.
+  # Extract first 50 lines or until empty line as summary.
+  local summary
+  summary="$(head -50 "${ast_changelog}" | sed -n '/^[^\s]/,/^$/p' | head -20)"
+
+  if [[ -z "${summary}" ]]; then
+    summary="Asterisk ${version} release"
+  fi
+
+  # Create temporary changelog with new entry.
+  local tmp_changelog
+  tmp_changelog="$(mktemp)"
+  {
+    echo "asterisk (1:${version}-1~jammy) jammy; urgency=medium"
+    echo
+    echo "${summary}" | sed 's/^/  /'
+    echo
+    echo " -- build-deb.sh <build@local>  $(date -R)"
+    echo
+    cat "${deb_changelog}"
+  } > "${tmp_changelog}"
+
+  mv "${tmp_changelog}" "${deb_changelog}"
+  echo "Updated debian/changelog from Asterisk ChangeLog"
+}
+
+update_debian_changelog "${SRC_DIR}" "${VERSION}"
 
 if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
   run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/get_mp3_source.sh"
