@@ -4,7 +4,7 @@ set -euo pipefail
 # Build Asterisk .deb package from this packaging repository.
 # Usage:
 #   ./build-deb.sh
-#   ./build-deb.sh --version 22.8 --workdir /opt/build --no-install-deps
+#   ./build-deb.sh --version 22.8-cert2 --workdir /opt/build --no-install-deps
 
 VERSION="current"
 WORKDIR="/opt/build"
@@ -69,7 +69,8 @@ if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
     lintian \
     quilt \
     git \
-    curl
+    curl \
+    subversion
 fi
 
 if ! command -v curl >/dev/null 2>&1; then
@@ -91,8 +92,8 @@ mkdir -p "${SRC_DIR}"
 
 if [[ -n "$(ls -A "${SRC_DIR}" 2>/dev/null)" ]]; then
   echo "Build directory is not empty: ${SRC_DIR}" >&2
-  echo "Use a different --workdir or remove existing contents." >&2
-  exit 1
+  echo "Removing existing contents..." >&2
+  rm -rf "${SRC_DIR}" && mkdir -p "${SRC_DIR}"
 fi
 
 echo "Downloading Asterisk ${VERSION}..."
@@ -104,55 +105,10 @@ cp -a "${SCRIPT_DIR}/debian" "${SRC_DIR}/debian"
 
 chmod +x \
   "${SRC_DIR}/debian/asterisk.postinst" \
-  "${SRC_DIR}/debian/asterisk.postrm" \
-  "${SRC_DIR}/debian/asterisk.install"
+  "${SRC_DIR}/debian/asterisk.postrm"
 
-# Update debian/changelog from Asterisk ChangeLog.
-update_debian_changelog() {
-  local src_dir="$1"
-  local version="$2"
-  local deb_changelog="${src_dir}/debian/changelog"
-  local ast_changelog
-  
-  # Find ChangeLog file: ChangeLog-VERSION.md or ChangeLog-VERSION or ChangeLog
-  if [[ -f "${src_dir}/ChangeLog-${version}.md" ]]; then
-    ast_changelog="${src_dir}/ChangeLog-${version}.md"
-  elif [[ -f "${src_dir}/ChangeLog-${version}" ]]; then
-    ast_changelog="${src_dir}/ChangeLog-${version}"
-  elif [[ -f "${src_dir}/ChangeLog" ]]; then
-    ast_changelog="${src_dir}/ChangeLog"
-  else
-    echo "warning: No ChangeLog found; skipping changelog update" >&2
-    return 0
-  fi
-
-  # Parse Asterisk ChangeLog and prepend to debian/changelog.
-  # Extract first 50 lines or until empty line as summary.
-  local summary
-  summary="$(head -50 "${ast_changelog}" | sed -n '/^[^\s]/,/^$/p' | head -20)"
-
-  if [[ -z "${summary}" ]]; then
-    summary="Asterisk ${version} release"
-  fi
-
-  # Create temporary changelog with new entry.
-  local tmp_changelog
-  tmp_changelog="$(mktemp)"
-  {
-    echo "asterisk (1:${version}-1~jammy) jammy; urgency=medium"
-    echo
-    echo "${summary}" | sed 's/^/  /'
-    echo
-    echo " -- build-deb.sh <build@local>  $(date -R)"
-    echo
-    cat "${deb_changelog}"
-  } > "${tmp_changelog}"
-
-  mv "${tmp_changelog}" "${deb_changelog}"
-  echo "Updated debian/changelog from Asterisk ChangeLog"
-}
-
-# update_debian_changelog "${SRC_DIR}" "${VERSION}"
+# .install must be a plain data file; executable bit can make debhelper treat it as a script.
+chmod 0644 "${SRC_DIR}/debian/asterisk.install"
 
 if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
   run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/get_mp3_source.sh"
@@ -161,7 +117,7 @@ fi
 
 echo "Building Debian package..."
 cd "${SRC_DIR}"
-dpkg-buildpackage -us -uc -b
+dpkg-buildpackage -us -uc -b -d
 
 echo
 echo "Build completed. Packages are in:"

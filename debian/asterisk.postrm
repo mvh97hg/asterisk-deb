@@ -2,7 +2,7 @@
 set -e
 
 case "$1" in
-  purge)
+  remove|purge)
     echo "Purging Asterisk data and user..."
 
     # Remove service user/group.
@@ -12,13 +12,15 @@ case "$1" in
     fi
 
     # Remove runtime/data directories; keep config under /etc/asterisk.
-    rm -rf /var/lib/asterisk
-    rm -rf /var/log/asterisk
-    rm -rf /var/spool/asterisk
-    rm -rf /run/asterisk
+    rm -rf /var/lib/asterisk \
+    /var/log/asterisk \
+    /var/spool/asterisk \
+    /run/asterisk \
+    /etc/logrotate.d/asterisk \
+    /lib/systemd/system/asterisk.service
   ;;
 
-  remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+  upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
   ;;
 
   *)
