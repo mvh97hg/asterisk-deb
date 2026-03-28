@@ -44,7 +44,7 @@ EOF
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SRC_DIR="${WORKDIR}/asterisk_${VERSION}"
+SRC_DIR="${WORKDIR}/asterisk-${VERSION}"
 TARBALL_URL="https://downloads.asterisk.org/pub/telephony/certified-asterisk/asterisk-certified-${VERSION}.tar.gz"
 
 run_privileged() {

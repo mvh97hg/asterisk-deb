@@ -33,9 +33,22 @@ override_dh_auto_configure:
 	
 	# Enable better backtraces for debugging
 	menuselect/menuselect --enable BETTER_BACKTRACES menuselect.makeopts
+
+	# core
+	menuselect/menuselect --enable channelstorage_cpp_map_name_id menuselect.makeopts
+	menuselect/menuselect --enable streamplayer menuselect.makeopts
 	
 	# enable ooh323
 	menuselect/menuselect --enable chan_ooh323 menuselect.makeopts
+	menuselect/menuselect --enable format_mp3 menuselect.makeopts
+
+	#pbx modules
+	menuselect/menuselect --enable pbx_lua menuselect.makeopts
+	menuselect/menuselect --enable pbx_realtime menuselect.makeopts
+	# dialplan functions
+	menuselect/menuselect --enable func_uuid menuselect.makeopts
+	menuselect/menuselect --enable func_sayfiles menuselect.makeopts
+	menuselect/menuselect --enable func_evalexten menuselect.makeopts
 	
 	# codecs
 	menuselect/menuselect --enable codec_opus menuselect.makeopts
@@ -54,3 +67,4 @@ override_dh_auto_build:
 override_dh_auto_install:
 	make DESTDIR=$(CURDIR)/debian/asterisk install
 	make DESTDIR=$(CURDIR)/debian/asterisk install-logrotate
+	make DESTDIR=$(CURDIR)/debian/asterisk samples
