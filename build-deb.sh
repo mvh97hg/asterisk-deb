@@ -152,7 +152,7 @@ update_debian_changelog() {
   echo "Updated debian/changelog from Asterisk ChangeLog"
 }
 
-update_debian_changelog "${SRC_DIR}" "${VERSION}"
+# update_debian_changelog "${SRC_DIR}" "${VERSION}"
 
 if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
   run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/get_mp3_source.sh"
