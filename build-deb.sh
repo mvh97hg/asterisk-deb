@@ -111,7 +111,7 @@ chmod +x \
 chmod 0644 "${SRC_DIR}/debian/asterisk.install"
 
 if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
-  run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/get_mp3_source.sh"
+#   run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/get_mp3_source.sh"
   run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/install_prereq install"
 fi
 
