@@ -1,5 +1,5 @@
 [Unit]
-Description=Asterisk PBX and telephony daemon
+Description=Asterisk PBX daemon
 After=network.target
 Wants=network-online.target
 
@@ -12,7 +12,6 @@ RuntimeDirectoryMode=0755
 ExecStart=/usr/sbin/asterisk -f -U asterisk -G asterisk
 ExecReload=/usr/sbin/asterisk -rx "core reload"
 ExecStop=/usr/sbin/asterisk -rx "core stop now"
-ExecReStart=/usr/sbin/asterisk -rx "core restart gracefully"
 Restart=on-failure
 RestartSec=3
 LimitCORE=infinity
