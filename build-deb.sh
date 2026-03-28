@@ -6,7 +6,7 @@ set -euo pipefail
 #   ./build-deb.sh
 #   ./build-deb.sh --version 22.8 --workdir /opt/build --no-install-deps
 
-VERSION="certified-22.8-cert2"
+VERSION="current"
 WORKDIR="/opt/build"
 INSTALL_DEPS=1
 
@@ -29,7 +29,7 @@ while [[ $# -gt 0 ]]; do
 Usage: ./build-deb.sh [options]
 
 Options:
-  --version <ver>        Asterisk version to build (default: 22.7.0)
+  --version <ver>        Asterisk version to build (default: current)
   --workdir <dir>        Build workspace (default: /opt/build)
   --no-install-deps      Skip apt/contrib dependency installation
   -h, --help             Show this help
@@ -45,7 +45,7 @@ done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="${WORKDIR}/asterisk_${VERSION}"
-TARBALL_URL="https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${VERSION}.tar.gz"
+TARBALL_URL="https://downloads.asterisk.org/pub/telephony/certified-asterisk/asterisk-certified-${VERSION}.tar.gz"
 
 run_privileged() {
   if [[ "${EUID}" -eq 0 ]]; then
