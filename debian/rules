@@ -40,7 +40,6 @@ override_dh_auto_configure:
 	
 	# enable ooh323
 	menuselect/menuselect --enable chan_ooh323 menuselect.makeopts
-	menuselect/menuselect --enable format_mp3 menuselect.makeopts
 
 	#pbx modules
 	menuselect/menuselect --enable pbx_lua menuselect.makeopts
