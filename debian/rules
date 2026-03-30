@@ -24,8 +24,9 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 #	dh_auto_configure -- \
 #	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
 override_dh_auto_configure:
-	./bootstrap.sh
-	./configure --without-pjproject-bundled --with-ssl=ssl --with-crypto
+	# Use the shipped configure script from release tarball.
+	# Running bootstrap.sh in minimal build env can leave unexpanded m4 macros.
+	./configure --with-ssl=ssl --with-crypto
 	
 	make menuselect/menuselect menuselect-tree menuselect.makeopts
 	# disable BUILD_NATIVE to avoid platform issues

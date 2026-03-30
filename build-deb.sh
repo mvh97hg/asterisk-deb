@@ -60,17 +60,74 @@ run_privileged() {
 
 if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
   run_privileged apt-get update
+  # Install from install_prereq test output + packaging toolchain
   run_privileged apt-get install -y \
+    autoconf-archive \
+    binutils-dev \
+    bison \
     build-essential \
+    curl \
+    doxygen \
+    flex \
+    freetds-dev \
+    git \
+    graphviz \
+    libasound2-dev \
+    libbluetooth-dev \
+    libc-client2007e-dev \
+    libcap-dev \
+    libcfg-dev \
+    libcodec2-dev \
+    libcorosync-common-dev \
+    libcpg-dev \
+    libcurl4-openssl-dev \
+    libedit-dev \
+    libfftw3-dev \
+    libgmime-3.0-dev \
+    libgsm1-dev \
+    libical-dev \
+    libiksemel-dev \
+    libjack-jackd2-dev \
+    libjansson-dev \
+    libldap-dev \
+    libldap2-dev \
+    liblua5.2-dev \
+    libmysqlclient-dev \
+    libneon27-dev \
+    libnewt-dev \
+    libogg-dev \
+    libpopt-dev \
+    libpq-dev \
+    libradcli-dev \
+    libresample1-dev \
+    libsndfile1-dev \
+    libsnmp-dev \
+    libspandsp-dev \
+    libspeex-dev \
+    libspeexdsp-dev \
+    libsqlite3-dev \
+    libsrtp2-dev \
+    libssl-dev \
+    libunbound-dev \
+    liburiparser-dev \
+    libvorbis-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    patch \
+    pkg-config \
+    portaudio19-dev \
+    subversion \
+    unixodbc-dev \
+    uuid-dev \
+    wget \
+    xmlstarlet \
+    zlib1g-dev \
     devscripts \
     debhelper \
     dh-make \
     fakeroot \
     lintian \
-    quilt \
-    git \
-    curl \
-    subversion
+    quilt
 fi
 
 if ! command -v curl >/dev/null 2>&1; then
@@ -103,6 +160,11 @@ curl -fsSL "${TARBALL_URL}" | tar --strip-components=1 -xz -C "${SRC_DIR}"
 rm -rf "${SRC_DIR}/debian"
 cp -a "${SCRIPT_DIR}/debian" "${SRC_DIR}/debian"
 
+# Normalize line endings for maintainer scripts copied from Windows workspace.
+for f in "${SRC_DIR}/debian/asterisk.postinst" "${SRC_DIR}/debian/asterisk.postrm"; do
+  sed -i 's/\r$//' "$f"
+done
+
 chmod +x \
   "${SRC_DIR}/debian/asterisk.postinst" \
   "${SRC_DIR}/debian/asterisk.postrm"
@@ -110,13 +172,9 @@ chmod +x \
 # .install must be a plain data file; executable bit can make debhelper treat it as a script.
 chmod 0644 "${SRC_DIR}/debian/asterisk.install"
 
-if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
-#   run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/get_mp3_source.sh"
-  run_privileged bash -lc "cd '${SRC_DIR}' && contrib/scripts/install_prereq install"
-fi
-
 echo "Building Debian package..."
 cd "${SRC_DIR}"
+./contrib/scripts/install_prereq install
 dpkg-buildpackage -us -uc -b -d
 
 echo
