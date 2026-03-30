@@ -160,7 +160,7 @@ curl -fsSL "${TARBALL_URL}" | tar --strip-components=1 -xz -C "${SRC_DIR}"
 rm -rf "${SRC_DIR}/debian"
 cp -a "${SCRIPT_DIR}/debian" "${SRC_DIR}/debian"
 
-# Normalize line endings for maintainer scripts copied from Windows workspace.
+# Normalize line endings for maintainer scripts
 for f in "${SRC_DIR}/debian/asterisk.postinst" "${SRC_DIR}/debian/asterisk.postrm"; do
   sed -i 's/\r$//' "$f"
 done

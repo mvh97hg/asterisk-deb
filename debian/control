@@ -26,7 +26,6 @@ Build-Depends:
  libasound2-dev,
  portaudio19-dev,
  libsrtp2-dev | libsrtp0-dev,
- libpjproject-dev,
  libpq-dev,
  libmysqlclient-dev | libmariadb-dev,
  unixodbc-dev,
