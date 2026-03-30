@@ -23,8 +23,8 @@ case "$1" in
         /etc/asterisk/asterisk.conf
     fi
 
-    
-    for d in /etc/asterisk /var/lib/asterisk /var/log/asterisk /var/spool/asterisk /run/asterisk; do
+    # Keep /etc/asterisk root-owned; only runtime/data directories are writable.
+    for d in /var/lib/asterisk /var/log/asterisk /var/spool/asterisk /run/asterisk; do
       install -d -o asterisk -g asterisk -m 0750 "$d"
     done
   ;;

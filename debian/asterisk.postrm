@@ -2,7 +2,7 @@
 set -e
 
 case "$1" in
-  remove|purge)
+  purge)
     echo "Purging Asterisk data and user..."
 
     # Remove service user/group.
@@ -20,7 +20,7 @@ case "$1" in
     /lib/systemd/system/asterisk.service
   ;;
 
-  upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+  remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
   ;;
 
   *)
