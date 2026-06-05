@@ -53,13 +53,13 @@ jobs:
           
           # 3. Tự động cập nhật debian/changelog theo từng distro trong matrix
           # Kết quả version sẽ có dạng: 1.0.0~jammy, 1.0.0~noble...
-          dch --newversion "${VERSION}~${{ matrix.distro }}" \
+          dch --newversion "1:${VERSION}~${{ matrix.distro }}" \
               --distribution "${{ matrix.distro }}" \
               "Automated build for ${{ matrix.distro }} via GitHub Actions"
           
           # 4. Chạy script build của bạn
           chmod +x build-deb.sh
-          ./build-deb.sh --version "${VERSION}~${{ matrix.distro }}"
+          ./build-deb.sh --version "1:${VERSION}~${{ matrix.distro }}"
 
       - name: Collect artifacts
         run: |
