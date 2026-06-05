@@ -61,7 +61,7 @@ jobs:
           
           # 4. Chạy script build của bạn
           chmod +x build-deb.sh
-          ./build-deb.sh --version "1:${VERSION}~${{ matrix.distro }}"
+          ./build-deb.sh --version "${VERSION}"
 
       - name: Collect artifacts
         run: |
