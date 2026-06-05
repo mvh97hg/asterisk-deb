@@ -6,7 +6,7 @@ set -euo pipefail
 #   ./build-deb.sh
 #   ./build-deb.sh --version 22.8-cert2 --workdir /opt/build --no-install-deps
 
-VERSION="current"
+VERSION="22.8-cert2"
 WORKDIR="/opt/build"
 INSTALL_DEPS=1
 
@@ -59,75 +59,24 @@ run_privileged() {
 }
 
 if [[ "${INSTALL_DEPS}" -eq 1 ]]; then
+  echo "Installing build dependencies..."
   run_privileged apt-get update
-  # Install from install_prereq test output + packaging toolchain
+  
   run_privileged apt-get install -y \
-    autoconf-archive \
-    binutils-dev \
-    bison \
-    build-essential \
-    curl \
-    doxygen \
-    flex \
-    freetds-dev \
-    git \
-    graphviz \
-    libasound2-dev \
-    libbluetooth-dev \
-    libc-client2007e-dev \
-    libcap-dev \
-    libcfg-dev \
-    libcodec2-dev \
-    libcorosync-common-dev \
-    libcpg-dev \
-    libcurl4-openssl-dev \
-    libedit-dev \
-    libfftw3-dev \
-    libgmime-3.0-dev \
-    libgsm1-dev \
-    libical-dev \
-    libiksemel-dev \
-    libjack-jackd2-dev \
-    libjansson-dev \
-    libldap-dev \
-    libldap2-dev \
-    liblua5.2-dev \
-    libmysqlclient-dev \
-    libneon27-dev \
-    libnewt-dev \
-    libogg-dev \
-    libpopt-dev \
-    libpq-dev \
-    libradcli-dev \
-    libresample1-dev \
-    libsndfile1-dev \
-    libsnmp-dev \
-    libspandsp-dev \
-    libspeex-dev \
-    libspeexdsp-dev \
-    libsqlite3-dev \
-    libsrtp2-dev \
-    libssl-dev \
-    libunbound-dev \
-    liburiparser-dev \
-    libvorbis-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    patch \
-    pkg-config \
-    portaudio19-dev \
-    subversion \
-    unixodbc-dev \
-    uuid-dev \
-    wget \
-    xmlstarlet \
-    zlib1g-dev \
-    devscripts \
-    debhelper \
-    dh-make \
-    fakeroot \
-    lintian \
-    quilt
+  build-essential \
+  devscripts \
+  debhelper \
+  equivs \
+  fakeroot \
+  lintian \
+  quilt \
+  curl
+
+  run_privileged mk-build-deps \
+  -i \
+  -r \
+  debian/control \
+  -t "apt-get -y --no-install-recommends"
 fi
 
 if ! command -v curl >/dev/null 2>&1; then
@@ -141,7 +90,7 @@ if ! command -v tar >/dev/null 2>&1; then
 fi
 
 if ! command -v dpkg-buildpackage >/dev/null 2>&1; then
-  echo "dpkg-buildpackage is required (install package: devscripts)" >&2
+  echo "dpkg-buildpackage is required (install package: dpkg-dev)" >&2
   exit 1
 fi
 
@@ -174,8 +123,8 @@ chmod 0644 "${SRC_DIR}/debian/asterisk.install"
 
 echo "Building Debian package..."
 cd "${SRC_DIR}"
-./contrib/scripts/install_prereq install
-dpkg-buildpackage -us -uc -b -d
+# ./contrib/scripts/install_prereq install
+run_privileged dpkg-buildpackage -us -uc -b
 
 echo
 echo "Build completed. Packages are in:"

@@ -1,0 +1,13 @@
+/var/log/asterisk/*.log /var/log/asterisk/queue_log /var/log/asterisk/mmlog {
+        weekly
+        missingok
+        rotate 52
+        compress
+        delaycompress
+        notifempty
+        create 640 asterisk asterisk
+        sharedscripts
+        postrotate
+                /usr/sbin/asterisk -rx 'logger reload' > /dev/null 2> /dev/null
+        endscript
+}
