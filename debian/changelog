@@ -1,4 +1,4 @@
-asterisk (1:22.8.2-1~trixie) trixie; urgency=hight
+asterisk (1:22.8.2-1~jammy) jammy; urgency=hight
 
   * Custom build of Asterisk 22.8
 
