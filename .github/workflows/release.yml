@@ -52,7 +52,7 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           
           # 3. Tự động cập nhật debian/changelog theo từng distro trong matrix
-          dch "--newversion "1:${VERSION}~${{ matrix.distro }}" \
+          dch --newversion "1:${VERSION}~${{ matrix.distro }}" \
               --distribution "${{ matrix.distro }}" \
               "Automated build for ${{ matrix.distro }} via GitHub Actions"
           
