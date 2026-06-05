@@ -52,7 +52,10 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           
           # 3. Tự động cập nhật debian/changelog theo từng distro trong matrix
-          dch --newversion "1:${VERSION}~${{ matrix.distro }}" \
+          # Kết quả version sẽ có dạng: 1.0.0~jammy, 1.0.0~noble...
+          dch --create \
+              --package "asterisk" \
+              --newversion "1:${VERSION}~${{ matrix.distro }}" \
               --distribution "${{ matrix.distro }}" \
               "Automated build for ${{ matrix.distro }} via GitHub Actions"
           
