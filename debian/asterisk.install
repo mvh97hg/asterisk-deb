@@ -1,2 +1,2 @@
 debian/healthcheck.sh /var/lib/asterisk/scripts
-debian/asterisk.logrotate /etc/logrotate.d/asterisk
+debian/asterisk.logrotate /etc/logrotate.d

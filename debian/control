@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: hungmv <hungmv9710@gmail.com>
 Build-Depends:
  debhelper-compat (= 13),
+ xmlstarlet,
  autoconf-archive,
  bison,
  flex,
@@ -26,6 +27,7 @@ Build-Depends:
  portaudio19-dev,
  libsrtp2-dev | libsrtp0-dev,
  libpq-dev,
+ libopus-dev,
  libmysqlclient-dev | libmariadb-dev,
  unixodbc-dev,
  libcurl4-openssl-dev,

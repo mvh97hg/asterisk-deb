@@ -3,6 +3,8 @@
 # output every command that modifies files on the build system.
 export DH_VERBOSE = 1
 
+# Force make to use bash instead of sh (dash)
+SHELL = /bin/bash
 
 # Enable distro hardening flags for production builds.
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
@@ -29,31 +31,57 @@ override_dh_auto_configure:
 	./configure --with-pjproject-bundled --with-ssl=ssl --with-crypto
 	
 	make menuselect/menuselect menuselect-tree menuselect.makeopts
+	
 	menuselect/menuselect --disable BUILD_NATIVE menuselect.makeopts 
+	
 	menuselect/menuselect --enable BETTER_BACKTRACES menuselect.makeopts 
+	
 	menuselect/menuselect --enable ENABLE_SRTP_AES_256 menuselect.makeopts 
+	
 	menuselect/menuselect --enable ENABLE_SRTP_AES_GCM menuselect.makeopts 
+	
 	menuselect/menuselect --enable channelstorage_cpp_map_name_id menuselect.makeopts 
+	
 	menuselect/menuselect --enable app_amd menuselect.makeopts 
+	
 	menuselect/menuselect --enable func_uuid menuselect.makeopts 
+	
 	menuselect/menuselect --enable func_json menuselect.makeopts 
+	
 	menuselect/menuselect --enable func_evalexten menuselect.makeopts 
-	menuselect/menuselect --enable codec_opus menuselect.makeopts 
-	menuselect/menuselect --enable codec_g729a menuselect.makeopts 
+	
 	menuselect/menuselect --disable cdr_csv menuselect.makeopts 
+	
 	menuselect/menuselect --disable cdr_odbc menuselect.makeopts 
+	
 	menuselect/menuselect --disable cdr_radius menuselect.makeopts 
+	
 	menuselect/menuselect --disable cdr_sqlite3_custom menuselect.makeopts 
+	
 	menuselect/menuselect --disable cdr_tds menuselect.makeopts 
+	
 	menuselect/menuselect --enable cel_custom menuselect.makeopts 
+	
 	menuselect/menuselect --disable cel_odbc menuselect.makeopts 
+	
 	menuselect/menuselect --disable cel_pgsql menuselect.makeopts 
+	
 	menuselect/menuselect --disable cel_radius menuselect.makeopts 
+	
 	menuselect/menuselect --disable cel_sqlite3_custom menuselect.makeopts 
+	
 	menuselect/menuselect --disable cel_tds menuselect.makeopts 
+
+	menuselect/menuselect --enable codec_opus menuselect.makeopts 
+	
+	menuselect/menuselect --enable codec_g729a menuselect.makeopts 
+	
 	menuselect/menuselect --disable-category MENUSELECT_CORE_SOUNDS menuselect.makeopts 
+	
 	menuselect/menuselect --disable-category MENUSELECT_MOH menuselect.makeopts 
+	
 	menuselect/menuselect --disable-category MENUSELECT_EXTRA_SOUNDS menuselect.makeopts 
+	
 	menuselect/menuselect --disable app_festival menuselect.makeopts 
 
 override_dh_auto_build:

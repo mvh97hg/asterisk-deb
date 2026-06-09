@@ -37,7 +37,8 @@ jobs:
             curl \
             ca-certificates \
             devscripts \
-            debhelper
+            debhelper \
+            equivs
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,9 +60,32 @@ jobs:
               --distribution "${{ matrix.distro }}" \
               "Automated build for ${{ matrix.distro }} via GitHub Actions"
           
-          # 4. Chạy script build của bạn
-          chmod +x build-deb.sh
-          ./build-deb.sh --version "${VERSION}"
+          # 4. Cài đặt các phụ thuộc build từ debian/control (bao gồm cả xmlstarlet)
+          mk-build-deps -i -r debian/control -t "apt-get -y --no-install-recommends"
+          
+          # 5. Tải Asterisk source tarball
+          WORKDIR="/opt/build"
+          SRC_DIR="${WORKDIR}/asterisk-${VERSION}"
+          TARBALL_URL="https://downloads.asterisk.org/pub/telephony/certified-asterisk/asterisk-certified-${VERSION}.tar.gz"
+          
+          mkdir -p "${SRC_DIR}"
+          echo "Downloading Asterisk ${VERSION}..."
+          curl -fsSL "${TARBALL_URL}" | tar --strip-components=1 -xz -C "${SRC_DIR}"
+          
+          # 6. Sao chép thư mục debian vào thư mục nguồn
+          rm -rf "${SRC_DIR}/debian"
+          cp -a debian "${SRC_DIR}/debian"
+          
+          # 7. Chuẩn hóa line endings và quyền thực thi
+          for f in "${SRC_DIR}/debian/asterisk.postinst" "${SRC_DIR}/debian/asterisk.postrm"; do
+            sed -i 's/\r$//' "$f"
+          done
+          chmod +x "${SRC_DIR}/debian/asterisk.postinst" "${SRC_DIR}/debian/asterisk.postrm"
+          chmod 0644 "${SRC_DIR}/debian/asterisk.install"
+          
+          # 8. Thực hiện build Debian package
+          cd "${SRC_DIR}"
+          dpkg-buildpackage -us -uc -b
 
       - name: Collect artifacts
         run: |
