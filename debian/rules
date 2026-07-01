@@ -43,6 +43,7 @@ override_dh_auto_configure:
 	menuselect/menuselect --enable channelstorage_cpp_map_name_id menuselect.makeopts 
 	
 	menuselect/menuselect --enable app_amd menuselect.makeopts 
+	menuselect/menuselect --enable app_if menuselect.makeopts 
 	
 	menuselect/menuselect --enable func_uuid menuselect.makeopts 
 	
