@@ -36,9 +36,9 @@ override_dh_auto_configure:
 	
 	menuselect/menuselect --enable BETTER_BACKTRACES menuselect.makeopts 
 	
-	menuselect/menuselect --enable ENABLE_SRTP_AES_256 menuselect.makeopts 
+# 	menuselect/menuselect --enable ENABLE_SRTP_AES_256 menuselect.makeopts 
 	
-	menuselect/menuselect --enable ENABLE_SRTP_AES_GCM menuselect.makeopts 
+# 	menuselect/menuselect --enable ENABLE_SRTP_AES_GCM menuselect.makeopts 
 	
 	menuselect/menuselect --enable channelstorage_cpp_map_name_id menuselect.makeopts 
 	
