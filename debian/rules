@@ -44,6 +44,7 @@ override_dh_auto_configure:
 	
 	menuselect/menuselect --enable app_amd menuselect.makeopts 
 	menuselect/menuselect --enable app_if menuselect.makeopts 
+	menuselect/menuselect --enable app_macro menuselect.makeopts 
 	
 # 	menuselect/menuselect --enable func_uuid menuselect.makeopts 
 	
