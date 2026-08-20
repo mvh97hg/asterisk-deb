@@ -36,17 +36,27 @@ override_dh_auto_configure:
 	
 	menuselect/menuselect --enable BETTER_BACKTRACES menuselect.makeopts 
 	
-# 	menuselect/menuselect --enable ENABLE_SRTP_AES_256 menuselect.makeopts 
+	menuselect/menuselect --enable ENABLE_SRTP_AES_256 menuselect.makeopts 
 	
-# 	menuselect/menuselect --enable ENABLE_SRTP_AES_GCM menuselect.makeopts 
+	menuselect/menuselect --enable ENABLE_SRTP_AES_GCM menuselect.makeopts 
 	
-# 	menuselect/menuselect --enable channelstorage_cpp_map_name_id menuselect.makeopts 
+	menuselect/menuselect --enable channelstorage_cpp_map_name_id menuselect.makeopts 
 	
 	menuselect/menuselect --enable app_amd menuselect.makeopts 
+
 	menuselect/menuselect --enable app_if menuselect.makeopts 
-	menuselect/menuselect --enable app_macro menuselect.makeopts 
+
+# 	menuselect/menuselect --enable app_macro menuselect.makeopts 
 	
-# 	menuselect/menuselect --enable func_uuid menuselect.makeopts 
+	menuselect/menuselect --enable res_corosync menuselect.makeopts 
+
+	menuselect/menuselect --enable res_audiosocket menuselect.makeopts 
+
+	menuselect/menuselect --enable pbx_lua menuselect.makeopts 
+
+	menuselect/menuselect --enable pbx_realtime menuselect.makeopts 
+
+	menuselect/menuselect --enable func_uuid menuselect.makeopts 
 	
 	menuselect/menuselect --enable func_json menuselect.makeopts 
 	
