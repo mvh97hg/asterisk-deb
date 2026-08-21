@@ -34,6 +34,7 @@ Build-Depends:
  libldap2-dev,
  corosync,
  libcpg-dev,
+ libcfg-dev,
  libcorosync-common-dev
 Standards-Version: 4.6.0
 Homepage: https://www.asterisk.org
