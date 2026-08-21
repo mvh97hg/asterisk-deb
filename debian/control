@@ -31,7 +31,8 @@ Build-Depends:
  libmysqlclient-dev | libmariadb-dev,
  unixodbc-dev,
  libcurl4-openssl-dev,
- libldap2-dev
+ libldap2-dev,
+ corosync-dev
 Standards-Version: 4.6.0
 Homepage: https://www.asterisk.org
 Rules-Requires-Root: no
