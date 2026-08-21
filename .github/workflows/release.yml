@@ -38,7 +38,8 @@ jobs:
             ca-certificates \
             devscripts \
             debhelper \
-            equivs
+            equivs  \
+            corosync
 
       - name: Checkout
         uses: actions/checkout@v4
