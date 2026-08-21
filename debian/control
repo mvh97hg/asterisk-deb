@@ -33,7 +33,8 @@ Build-Depends:
  libcurl4-openssl-dev,
  libldap2-dev,
  corosync,
- libcpg-dev
+ libcpg-dev,
+ libcorosync-common-dev
 Standards-Version: 4.6.0
 Homepage: https://www.asterisk.org
 Rules-Requires-Root: no
