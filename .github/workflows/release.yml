@@ -38,8 +38,7 @@ jobs:
             ca-certificates \
             devscripts \
             debhelper \
-            equivs  \
-            corosync
+            equivs 
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,7 +61,8 @@ jobs:
               "Automated build for ${{ matrix.distro }} via GitHub Actions"
           
           # 4. Cài đặt các phụ thuộc build từ debian/control (bao gồm cả xmlstarlet)
-          mk-build-deps -i -r debian/control -t "apt-get -y --no-install-recommends"
+          # mk-build-deps -i -r debian/control -t "apt-get -y --no-install-recommends"
+          mk-build-deps -i -r debian/control -t "apt-get -y"
           
           # 5. Tải Asterisk source tarball
           WORKDIR="/opt/build"
