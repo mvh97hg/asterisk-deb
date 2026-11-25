@@ -51,8 +51,10 @@ override_dh_auto_configure:
 	menuselect/menuselect --enable res_corosync menuselect.makeopts 
 	
 	menuselect/menuselect --enable res_prometheus menuselect.makeopts 
+	menuselect/menuselect --enable res_config_pgsql menuselect.makeopts 
 
 	menuselect/menuselect --enable res_audiosocket menuselect.makeopts 
+	menuselect/menuselect --enable chan_audiosocket menuselect.makeopts 
 
 	menuselect/menuselect --enable pbx_lua menuselect.makeopts 
 
@@ -92,7 +94,7 @@ override_dh_auto_configure:
 	
 	menuselect/menuselect --disable-category MENUSELECT_CORE_SOUNDS menuselect.makeopts 
 	
-	menuselect/menuselect --disable-category MENUSELECT_MOH menuselect.makeopts 
+# 	menuselect/menuselect --disable-category MENUSELECT_MOH menuselect.makeopts 
 	
 	menuselect/menuselect --disable-category MENUSELECT_EXTRA_SOUNDS menuselect.makeopts 
 	

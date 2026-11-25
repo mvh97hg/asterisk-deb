@@ -1,7 +1,5 @@
 [Unit]
 Description=Asterisk PBX engine
-Wants=network-online.target
-After=network-online.target syslog.target
 
 [Service]
 Type=simple

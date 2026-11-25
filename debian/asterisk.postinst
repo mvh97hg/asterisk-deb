@@ -24,7 +24,7 @@ case "$1" in
     fi
 
     # Keep /etc/asterisk root-owned; only runtime/data directories are writable.
-    chown -R asterisk:asterisk /var/lib/asterisk /var/log/asterisk /var/spool/asterisk /etc/asterisk
+    chown -R asterisk:asterisk /var/lib/asterisk /var/log/asterisk /var/spool/asterisk /etc/asterisk /var/cache/asterisk
   ;;
 esac
 
